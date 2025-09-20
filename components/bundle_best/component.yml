@@ -1,0 +1,34 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: bundle_best
+display_name: Bundle Best Model (model+vectorizer) + MLflow
+type: command
+is_deterministic: true
+
+inputs:
+  selection_json:
+    type: uri_file
+  model_lr:        {type: uri_file}
+  model_svm:
+    type: uri_file
+  vectorizer_pkl:
+    type: uri_file
+
+outputs:
+  best_bundle:
+    type: uri_folder
+  mlflow_model:
+    type: uri_folder
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+
+command: >-
+  python run.py
+  --selection_json ${{inputs.selection_json}}
+  --model_lr ${{inputs.model_lr}}
+  --model_svm ${{inputs.model_svm}}
+  --vectorizer_pkl ${{inputs.vectorizer_pkl}}
+  --best_bundle ${{outputs.best_bundle}}
+  --mlflow_model ${{outputs.mlflow_model}}

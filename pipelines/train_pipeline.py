@@ -15,6 +15,10 @@ train_lr        = load_component(source="../components/train_lr/component.yml")
 train_svm       = load_component(source="../components/train_svm/component.yml")
 
 compare_models  = load_component(source="../components/compare_models/component.yml")
+predict_generic        = load_component(source="../components/predict_generic/component.yml")
+evaluate_binary        = load_component(source="../components/evaluate_binary/component.yml")
+bundle_best        = load_component(source="../components/bundle_best/component.yml")
+
 
 COMPUTE_NAME = "cpu-cluster"
 
@@ -74,16 +78,48 @@ def amazon_train_pipeline(reviews_csv: Input(type="uri_file"),
         metrics_b_json=svm.outputs.output_metrics_json,
         name_a="lr", name_b="svm",
     )
+
+    # predicciones con LR
+    pred_lr = predict_generic(
+        input_parquet=spl.outputs.output_test,
+        vectorizer_pkl=fit.outputs.output_vectorizer,
+        model_pkl=lr.outputs.output_model_pkl,
+        text_col="text_clean",
+        label_col="label",
+        threshold=0.5
+    )
+    eval_lr = evaluate_binary(preds_parquet=pred_lr.outputs.output_predictions_parquet)
+
+    # predicciones con SVM
+    pred_svm = predict_generic(
+        input_parquet=spl.outputs.output_test,
+        vectorizer_pkl=fit.outputs.output_vectorizer,
+        model_pkl=svm.outputs.output_model_pkl,
+        text_col="text_clean",
+        label_col="label",
+        threshold=0.5
+    )
+    eval_svm = evaluate_binary(preds_parquet=pred_svm.outputs.output_predictions_parquet)
+
+    bundle = bundle_best(
+        selection_json=cmp.outputs.output_selection_json,
+        model_lr=lr.outputs.output_model_pkl,
+        model_svm=svm.outputs.output_model_pkl,
+        vectorizer_pkl=fit.outputs.output_vectorizer
+    )
     # Pipeline outputs
     return {
+        "best_bundle": bundle.outputs.best_bundle,
         "vectorizer":    fit.outputs.output_vectorizer,
         "model_lr":      lr.outputs.output_model_pkl,
         "metrics_lr":    lr.outputs.output_metrics_json,
         "model_svm":     svm.outputs.output_model_pkl,
         "metrics_svm":   svm.outputs.output_metrics_json,
         "selection":     cmp.outputs.output_selection_json,
-        # "pred_test_lr":  pred_test_lr.outputs.output_predictions_parquet,
-        # "pred_test_svm": pred_test_svm.outputs.output_predictions_parquet
+        "preds_lr":      pred_lr.outputs.output_predictions_parquet,
+        "eval_lr":       eval_lr.outputs.output_metrics_json,
+        "preds_svm":     pred_svm.outputs.output_predictions_parquet,
+        "eval_svm":      eval_svm.outputs.output_metrics_json,
     }
 
 

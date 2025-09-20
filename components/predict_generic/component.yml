@@ -1,0 +1,40 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: predict_generic
+display_name: Predict (Vectorizer+Model → Parquet)
+type: command
+
+inputs:
+  input_parquet:
+    type: uri_file
+  vectorizer_pkl:
+    type: uri_file
+  model_pkl:
+    type: uri_file
+  text_col:
+    type: string
+    default: text_clean
+  label_col:
+    type: string
+    default: label
+  threshold:
+    type: number
+    default: 0.5
+
+outputs:
+  output_predictions_parquet:
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+
+command: >-
+  python run.py
+  --input_parquet ${{inputs.input_parquet}}
+  --vectorizer_pkl ${{inputs.vectorizer_pkl}}
+  --model_pkl ${{inputs.model_pkl}}
+  --text_col ${{inputs.text_col}}
+  --label_col ${{inputs.label_col}}
+  --threshold ${{inputs.threshold}}
+  --output_predictions_parquet ${{outputs.output_predictions_parquet}}

@@ -1,0 +1,43 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: evaluate_binary
+display_name: Evaluate Binary (from predictions parquet)
+type: command
+
+inputs:
+  preds_parquet:
+    type: uri_file
+  y_true_col:
+    type: string
+    default: y_true
+  y_pred_col:
+    type: string
+    default: y_pred
+  y_prob_col:
+    type: string
+    default: y_prob
+
+outputs:
+  output_metrics_json:
+    type: uri_file
+  output_confusion_csv:
+    type: uri_file
+  output_roc_csv:
+    type: uri_file
+  output_pr_csv:
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+
+command: >-
+  python run.py
+  --preds_parquet ${{inputs.preds_parquet}}
+  --y_true_col ${{inputs.y_true_col}}
+  --y_pred_col ${{inputs.y_pred_col}}
+  --y_prob_col ${{inputs.y_prob_col}}
+  --output_metrics_json ${{outputs.output_metrics_json}}
+  --output_confusion_csv ${{outputs.output_confusion_csv}}
+  --output_roc_csv ${{outputs.output_roc_csv}}
+  --output_pr_csv ${{outputs.output_pr_csv}}
