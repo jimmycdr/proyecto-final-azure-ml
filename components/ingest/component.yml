@@ -1,0 +1,25 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: ingest
+display_name: Ingest CSV -> Parquet (Amazon Reviews)
+type: command
+is_deterministic: true
+
+inputs:
+  input_csv:
+    type: uri_file
+    description: "Ruta o URI al Reviews.csv original de Kaggle"
+
+outputs:
+  output_parquet:
+    type: uri_file
+    description: "Archivo Parquet de salida (único archivo)"
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+
+command: >-
+  python run.py
+  --input_csv ${{inputs.input_csv}}
+  --output_parquet ${{outputs.output_parquet}}

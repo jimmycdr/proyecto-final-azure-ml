@@ -1,0 +1,17 @@
+name: amazon-reviews-env
+channels: [conda-forge, defaults]
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - pandas
+      - numpy
+      - scikit-learn
+      - scipy
+      - pyarrow
+      - joblib
+      - azureml-mlflow
+      - azure-ai-ml
+      - azure-identity
+      - azure-ai-textanalytics
+      - matplotlib>=3.7

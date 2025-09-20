@@ -1,0 +1,36 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: split_stratified
+display_name: Stratified Train/Test Split
+type: command
+
+inputs:
+  input_parquet:
+    type: uri_file
+  label_col:
+    type: string
+    default: label
+  test_size:
+    type: number
+    default: 0.2
+  random_state:
+    type: integer
+    default: 42
+
+outputs:
+  output_train:
+    type: uri_file
+  output_test:
+    type: uri_file
+    
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+command:  >-
+  python run.py
+  --input_parquet ${{inputs.input_parquet}} 
+  --label_col ${{inputs.label_col}}
+  --test_size ${{inputs.test_size}} 
+  --random_state ${{inputs.random_state}} 
+  --output_train ${{outputs.output_train}} 
+  --output_test ${{outputs.output_test}}

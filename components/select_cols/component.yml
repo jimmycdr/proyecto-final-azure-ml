@@ -1,0 +1,25 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: select_cols
+display_name: Select Columns (Amazon Reviews)
+type: command
+is_deterministic: true
+
+inputs:
+  input_parquet:
+    type: uri_file
+    description: "Parquet de entrada"
+
+outputs:
+  output_parquet:
+    type: uri_file
+    description: "Parquet solo con columnas seleccionadas"
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+
+command: >-
+  python run.py
+  --input_parquet ${{inputs.input_parquet}}
+  --output_parquet ${{outputs.output_parquet}}

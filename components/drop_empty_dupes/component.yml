@@ -1,0 +1,23 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: drop_empty_dupes
+display_name: Drop Empty Text & Duplicates
+type: command
+
+inputs:
+  input_parquet:
+    type: uri_file
+
+outputs:
+  output_parquet:
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+
+command: >-
+  python run.py
+  --input_parquet ${{inputs.input_parquet}}   
+  --output_parquet ${{outputs.output_parquet}}
+

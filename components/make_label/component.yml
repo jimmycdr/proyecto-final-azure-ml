@@ -1,0 +1,29 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: make_label
+display_name: Make Binary Label from Score
+type: command
+
+inputs:
+  input_parquet:
+    type: uri_file
+  neg_threshold:
+    type: integer
+    default: 2
+  pos_threshold:
+    type: integer
+    default: 4
+
+outputs:
+  output_parquet:
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+command: >-
+  python run.py
+  --input_parquet ${{inputs.input_parquet}}
+  --neg_threshold ${{inputs.neg_threshold}}
+  --pos_threshold ${{inputs.pos_threshold}}
+  --output_parquet ${{outputs.output_parquet}}

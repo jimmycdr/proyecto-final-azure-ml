@@ -1,0 +1,44 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: tfidf_transform
+display_name: TF-IDF Transform (train/test)
+type: command
+
+inputs:
+  train_parquet:
+    type: uri_file
+  test_parquet:
+    type: uri_file
+  vectorizer_pkl:
+    type: uri_file
+  text_col:
+    type: string
+    default: text_clean
+  label_col:
+    type: string
+    default: label
+
+outputs:
+  output_X_train:
+    type: uri_file
+  output_X_test:
+    type: uri_file
+  output_y_train:
+    type: uri_file
+  output_y_test:
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+command: >-
+  python run.py
+  --train_parquet ${{inputs.train_parquet}} 
+  --test_parquet ${{inputs.test_parquet}}
+  --vectorizer_pkl ${{inputs.vectorizer_pkl}} 
+  --text_col ${{inputs.text_col}} 
+  --label_col ${{inputs.label_col}} 
+  --output_X_train ${{outputs.output_X_train}} 
+  --output_X_test ${{outputs.output_X_test}} 
+  --output_y_train ${{outputs.output_y_train}} 
+  --output_y_test ${{outputs.output_y_test}}

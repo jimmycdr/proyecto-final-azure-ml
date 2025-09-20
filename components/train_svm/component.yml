@@ -1,0 +1,66 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: train_svm
+display_name: Train Linear SVM (TF-IDF)
+type: command
+
+inputs:
+  X_train_npz:
+    type: uri_file
+  y_train_parquet:
+    type: uri_file
+  X_test_npz:
+    type: uri_file
+  y_test_parquet:
+    type: uri_file
+  y_col:
+    type: string
+    default: label
+  C:
+    type: number
+    default: 1.0
+  max_iter:
+    type: integer
+    default: 2000
+  class_weight:
+    type: string
+    default: balanced
+  calibration_cv:
+    type: integer
+    default: 3
+
+outputs:
+  output_model_pkl:
+    type: uri_file
+  output_metrics_json:
+    type: uri_file
+  output_predictions_parquet:
+    type: uri_file
+  output_confusion_csv:
+    type: uri_file
+  output_roc_csv:
+    type: uri_file
+  output_pr_csv:
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+  
+command: >-
+  python run.py
+  --X_train_npz ${{inputs.X_train_npz}}
+  --y_train_parquet ${{inputs.y_train_parquet}}
+  --X_test_npz ${{inputs.X_test_npz}}
+  --y_test_parquet ${{inputs.y_test_parquet}}
+  --y_col ${{inputs.y_col}}
+  --C ${{inputs.C}}
+  --max_iter ${{inputs.max_iter}}
+  --class_weight ${{inputs.class_weight}}
+  --calibration_cv ${{inputs.calibration_cv}}
+  --output_model_pkl ${{outputs.output_model_pkl}}
+  --output_metrics_json ${{outputs.output_metrics_json}}
+  --output_predictions_parquet ${{outputs.output_predictions_parquet}}
+  --output_confusion_csv ${{outputs.output_confusion_csv}}
+  --output_roc_csv ${{outputs.output_roc_csv}}
+  --output_pr_csv ${{outputs.output_pr_csv}}

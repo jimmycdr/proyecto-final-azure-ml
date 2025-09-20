@@ -1,0 +1,40 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: tfidf_fit
+display_name: TF-IDF Fit (train only)
+type: command
+
+inputs:
+  train_parquet:
+    type: uri_file
+  text_col:
+    type: string
+    default: text_clean
+  max_features:
+    type: integer
+    default: 30000
+  ngram_range:
+    type: string
+    default: 1,2
+  min_df:
+    type: integer
+    default: 3
+
+outputs:
+  output_vectorizer:
+    type: uri_file
+  output_report:
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+command: >-
+  python run.py
+  --train_parquet ${{inputs.train_parquet}} 
+  --text_col ${{inputs.text_col}}
+  --max_features ${{inputs.max_features}} 
+  --ngram_range ${{inputs.ngram_range}} 
+  --min_df ${{inputs.min_df}} 
+  --output_vectorizer ${{outputs.output_vectorizer}} 
+  --output_report ${{outputs.output_report}}

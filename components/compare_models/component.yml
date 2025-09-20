@@ -1,0 +1,36 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: compare_models
+display_name: Compare Models (pick best by F1)
+type: command
+
+inputs:
+  metrics_a_json:
+    type: uri_file
+  metrics_b_json:
+    type: uri_file
+  name_a:
+    type: string
+    default: lr
+  name_b:
+    type: string
+    default: svm
+    
+outputs:
+  output_selection_json:
+    type: uri_file
+  output_winner_txt:        
+    type: uri_file
+
+code: .
+environment:
+  conda_file: ../../envs/conda.yml
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+
+command: >-
+  python run.py
+  --metrics_a_json ${{inputs.metrics_a_json}}
+  --metrics_b_json ${{inputs.metrics_b_json}}
+  --name_a ${{inputs.name_a}}
+  --name_b ${{inputs.name_b}}
+  --output_selection_json ${{outputs.output_selection_json}}
+  --output_winner_txt ${{outputs.output_winner_txt}}
